@@ -1,0 +1,116 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name="simple_robot">
+    <static>false</static>
+
+    <!-- Base Link -->
+    <link name="base_link">
+      <pose>0 0 0.1 0 0 0</pose>
+
+      <!-- Visual (for debugging) -->
+      <visual name="base_visual">
+        <geometry>
+          <box><size>0.3 0.2 0.1</size></box>
+        </geometry>
+        <material><ambient>0.1 0.5 0.8 1</ambient></material>
+      </visual>
+
+      <!-- Collision (basic for physics) -->
+      <collision name="base_collision">
+        <geometry>
+          <box><size>0.3 0.2 0.1</size></box>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- IMU Sensor -->
+    <link name="imu_link">
+      <sensor name="imu_sensor" type="imu">
+        <pose>0 0 0.0 0 0 0</pose>
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <imu>
+          <angular_velocity>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.01</stddev> <!-- Increased for realistic motion -->
+            </noise>
+          </angular_velocity>
+          <linear_acceleration>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.1</stddev> <!-- Increased for better simulation -->
+            </noise>
+          </linear_acceleration>
+        </imu>
+
+        <!-- ROS 2 IMU Plugin -->
+        <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+          <ros>
+            <namespace>/robot</namespace>
+            <remapping>~/out:=imu</remapping>
+          </ros>
+          <frame_name>imu_link</frame_name>
+          <update_rate>100.0</update_rate>
+          <gaussian_noise>0.01</gaussian_noise>
+
+          <!-- Added parameters for better simulation -->
+          <initial_orientation_as_reference>false</initial_orientation_as_reference>
+          <xyz_offset>0 0 0</xyz_offset>
+          <rpy_offset>0 0 0</rpy_offset>
+        </plugin>
+      </sensor>
+    </link>
+
+    <!-- GPS Sensor -->
+<link name="gps_link">
+  <sensor name="gps_sensor" type="gps">
+    <pose>0 0 0.2 0 0 0</pose>
+    <always_on>true</always_on>
+    <update_rate>10</update_rate>
+    <gps>
+      <position_sensing>
+        <horizontal>
+          <noise type="gaussian">
+            <mean>0.0</mean>
+            <stddev>0.5</stddev>
+          </noise>
+        </horizontal>
+        <vertical>
+          <noise type="gaussian">
+            <mean>0.0</mean>
+            <stddev>0.1</stddev>
+          </noise>
+        </vertical>
+      </position_sensing>
+      <reference_altitude>0.0</reference_altitude>
+    </gps>
+
+    <!-- ROS 2 GPS Plugin -->
+    <plugin name="gps_plugin" filename="libgazebo_ros_gps_sensor.so">
+      <ros>
+        <namespace>/robot</namespace>
+        <remapping>~/fix:=gps</remapping> <!-- Corrected from ~/out -->
+        <remapping>~/vel:=gps_vel</remapping>
+      </ros>
+      <frame_name>gps_link</frame_name>
+    </plugin>
+  </sensor>
+</link>
+
+    <!-- Fixed Joint between Base and IMU -->
+    <joint name="imu_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>imu_link</child>
+      <pose>0 0 0.1 0 0 0</pose>
+    </joint>
+
+    <!-- Fixed Joint between Base and IMU -->
+    <joint name="gps_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>gps_link</child>
+      <pose>0 0 0.2 0 0 0</pose>
+    </joint>
+
+  </model>
+</sdf>

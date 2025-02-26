@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="default">
+    <!-- World Origin for GPS -->
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>37.7749</latitude_deg> <!-- San Francisco -->
+      <longitude_deg>-122.4194</longitude_deg>
+      <elevation>0.0</elevation>
+      <heading_deg>0.0</heading_deg>
+    </spherical_coordinates>
+
+    <!-- Magnetic Field (needed for GPS) -->
+    <magnetic_field>
+      <x>0.0</x>
+      <y>0.0</y>
+      <z>0.5</z>
+    </magnetic_field>
+
+    <!-- World Clock for GPS -->
+    <plugin name="world_control" filename="libgazebo_ros_clock.so"/>
+
+    <!-- Light Source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Ground Plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Physics Configuration -->
+    <physics name="default_physics" type="ode">
+      <real_time_update_rate>1000</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <gravity>0 0 -9.81</gravity>
+    </physics>
+
+    <!-- Environment Settings -->
+    <atmosphere type="adiabatic"/>
+    <gui fullscreen="false">
+      <camera name="default_camera">
+        <pose>0 0 10 0 -90 0</pose>
+      </camera>
+    </gui>
+
+    <!-- Logging -->
+    <logging>
+      <recording>false</recording>
+    </logging>
+
+  </world>
+</sdf>
